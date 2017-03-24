@@ -21,26 +21,18 @@ public class FeedService {
 
     public FeedService(UbbService ubbService) {
         mUbbService = ubbService;
-        ubbService.feedItemList(new Callback<List<FeedItem>>() {
+        Call<List<FeedItem>> call = mUbbService.feedItemList();
+        call.enqueue(new Callback<List<FeedItem>>() {
             @Override
             public void onResponse(Call<List<FeedItem>> call, Response<List<FeedItem>> response) {
-                ArrayList<FeedItem> list = (ArrayList<FeedItem>) response.body();
-                for(FeedItem item : list){
-                    Log.d("FeedService",item.toString());
-                    try {
-                        mFeedRepositoryMemory.create(item);
-                    } catch (Exception e) {
-                        Log.e("FeedService",e.toString());
-                    }
-                }
+                Log.d("ON RESPONSE", "DONE ");
             }
 
             @Override
-            public void onFailure(Call<List<FeedItem>> call, Throwable throwable) {
-                Log.e("FeedService-callback","callback failed!");
+            public void onFailure(Call<List<FeedItem>> call, Throwable t) {
+                Log.d("ON FAILURE", "ON FAILURE!!! ");
             }
         });
-
     }
 
 }

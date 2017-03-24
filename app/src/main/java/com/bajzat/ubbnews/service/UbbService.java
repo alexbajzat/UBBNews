@@ -13,5 +13,5 @@ import retrofit2.http.GET;
  */
 public interface UbbService {
     @GET("api.json?rss_url=http%3A%2F%2Fwww.cs.ubbcluj.ro%2Ffeed%2F")
-    Call<List<FeedItem>> feedItemList(Callback<List<FeedItem>> callback);
+    Call<List<FeedItem>> feedItemList();
 }
