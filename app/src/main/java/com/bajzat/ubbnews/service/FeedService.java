@@ -25,12 +25,12 @@ public class FeedService {
         call.enqueue(new Callback<List<FeedItem>>() {
             @Override
             public void onResponse(Call<List<FeedItem>> call, Response<List<FeedItem>> response) {
-                Log.d("ON RESPONSE", "DONE ");
+                Log.i("ON RESPONSE", "DONE ");
             }
 
             @Override
             public void onFailure(Call<List<FeedItem>> call, Throwable t) {
-                Log.d("ON FAILURE", "ON FAILURE!!! ");
+                Log.i("ON FAILURE", "ON FAILURE!!! ");
             }
         });
     }
