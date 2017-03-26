@@ -10,6 +10,16 @@ public class FeedItem {
     private String guid;
     private String author;
     private String description;
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     private String category;
 
     public String getTitle() {
@@ -68,7 +78,7 @@ public class FeedItem {
         this.category = category;
     }
 
-    public FeedItem(String title, String pubDate, String link, String guid, String author, String description, String category) {
+    public FeedItem(String title, String pubDate, String link, String guid, String author, String description, String content, String category) {
 
         this.title = title;
         this.pubDate = pubDate;
@@ -76,6 +86,7 @@ public class FeedItem {
         this.guid = guid;
         this.author = author;
         this.description = description;
+        this.content = content;
         this.category = category;
     }
 }

@@ -20,6 +20,7 @@ public class FeedRepositoryMemory implements Repository<String, FeedItem> {
         if(map.containsKey(obj.getGuid())){
             throw new Exception("This item already exists!");
         }
+        map.put(obj.getGuid(),obj);
     }
 
     @Override
@@ -35,6 +36,10 @@ public class FeedRepositoryMemory implements Repository<String, FeedItem> {
 
     @Override
     public Iterable<FeedItem> read() {
-        return new ArrayList<>(map.values());
+        return new ArrayList<FeedItem>(map.values());
+    }
+
+    public FeedItem getById(String id){
+        return map.get(id);
     }
 }
