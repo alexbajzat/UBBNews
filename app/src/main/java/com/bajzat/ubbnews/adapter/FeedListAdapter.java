@@ -24,7 +24,7 @@ import java.util.List;
  * Created by bjz on 3/25/2017.
  */
 
-public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> implements Observer{
+public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> implements Observer {
 
     private ArrayList<FeedItem> dataSet;
 
