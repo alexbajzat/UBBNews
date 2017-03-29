@@ -1,53 +1,67 @@
 package com.bajzat.ubbnews.activity;
 
+import android.net.Uri;
+import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.bajzat.ubbnews.R;
-import com.bajzat.ubbnews.adapter.FeedListAdapter;
-import com.bajzat.ubbnews.model.FeedItem;
-import com.bajzat.ubbnews.service.FeedService;
-import com.bajzat.ubbnews.service.UbbService;
+import com.bajzat.ubbnews.fragments.HomeFragment;
+import com.bajzat.ubbnews.fragments.ProfileFragment;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
 
-import java.util.ArrayList;
+public class HomeActivity extends AppCompatActivity
+        implements HomeFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
 
-import retrofit2.GsonConverterFactory;
-import retrofit2.Retrofit;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private HomeFragment homeFragment;
+    private ProfileFragment profileFragment;
+    private BottomBar bottomBar;
+    private Toolbar toolbar;
 
-public class HomeActivity extends AppCompatActivity {
-    private RecyclerView feedListView;
-    private FeedListAdapter mFeedListAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private Retrofit retrofit;
-    private FeedService mFeedService;
-    private UbbService ubbService;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        initService();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
-        setSupportActionBar(toolbar);
 
 
-        feedListView = (RecyclerView) findViewById(R.id.feed_list);
-        mLayoutManager = new LinearLayoutManager(this);
-        feedListView.setLayoutManager(mLayoutManager);
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        homeFragment = new HomeFragment();
+        profileFragment = new ProfileFragment();
 
-        mFeedListAdapter = new FeedListAdapter((ArrayList<FeedItem>) mFeedService.getList());
-        mFeedService.addObserver(mFeedListAdapter);
-
-        feedListView.setAdapter(mFeedListAdapter);
+        manageToolbars();
     }
 
-    private void initService() {
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.rss2json.com/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        ubbService = retrofit.create(UbbService.class);
-        mFeedService = new FeedService(ubbService);
+    void manageToolbars() {
+        toolbar = (Toolbar) findViewById(R.id.home_toolbar);
+        setSupportActionBar(toolbar);
+
+        bottomBar = (BottomBar) findViewById(R.id.bottom_nav);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                        .beginTransaction();
+                if (tabId == R.id.tab_home) {
+                    fragmentTransaction.replace(R.id.fragments_container, homeFragment);
+                }
+                if (tabId == R.id.tab_profile) {
+                    fragmentTransaction.replace(R.id.fragments_container, profileFragment);
+                }
+                fragmentTransaction.commit();
+            }
+        });
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
