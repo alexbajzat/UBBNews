@@ -2,19 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <tabs>
         <tab
+            icon="@drawable/ic_home"
             id="@+id/tab_home"
             title="Home"
-            icon="@drawable/ic_home"
             />
         <tab
+            icon="@drawable/ic_notification"
             id="@+id/tab_profile"
             title="Profile"
-            icon="@drawable/ic_notification"
             />
         <tab
+            icon="@drawable/ic_profile"
             id="@+id/tab_news_feed"
             title="News Feed"
-            icon="@drawable/ic_profile"
             />
+
     </tabs>
 </PreferenceScreen>

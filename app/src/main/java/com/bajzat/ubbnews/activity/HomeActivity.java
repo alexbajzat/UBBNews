@@ -2,18 +2,16 @@ package com.bajzat.ubbnews.activity;
 
 import android.net.Uri;
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.bajzat.ubbnews.R;
 import com.bajzat.ubbnews.fragments.HomeFragment;
 import com.bajzat.ubbnews.fragments.ProfileFragment;
+import com.bajzat.ubbnews.model.FeedItem;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -62,6 +60,11 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onFeedChoosed(FeedItem feedItem) {
 
     }
 }

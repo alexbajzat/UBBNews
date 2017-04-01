@@ -1,11 +1,17 @@
 package com.bajzat.ubbnews.fragments;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,15 +57,6 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -76,8 +73,6 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     private void initService() {
@@ -93,15 +88,16 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_home, container, false);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
         initService();
-
         feedListView = (RecyclerView) v.findViewById(R.id.feed_list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         feedListView.setLayoutManager(mLayoutManager);
 
         mFeedListAdapter = new FeedListAdapter((ArrayList<FeedItem>) mFeedService.getList());
         mFeedService.addObserver(mFeedListAdapter);
+        initRecyclerEvent();
+        setUpAnimationDecoratorHelper();
 
         feedListView.setAdapter(mFeedListAdapter);
         return v;
@@ -131,18 +127,125 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+
+        void onFeedChoosed(FeedItem feedItem);
+    }
+
+    public void initRecyclerEvent() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0
+                , ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            private Drawable backgroud;
+            private Drawable addIcon;
+            private int addIconMargin;
+            private boolean initiated = false;
+
+            private void init() {
+                backgroud = new ColorDrawable(Color.DKGRAY);
+                addIcon = ContextCompat.getDrawable(HomeFragment.this.getActivity()
+                        , R.drawable.ic_action_add);
+                addIconMargin = (int) HomeFragment.this.getActivity().getResources()
+                        .getDimension(R.dimen.add_icon);
+                initiated = true;
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                if (direction == ItemTouchHelper.LEFT) {
+
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+                if (viewHolder.getAdapterPosition() == -1) {
+                    return;
+                }
+                if (!initiated) {
+                    init();
+                }
+                backgroud.setBounds(itemView.getRight() + (int) dX, itemView.getTop()
+                        , itemView.getRight(), itemView.getBottom());
+                backgroud.draw(c);
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(feedListView);
+    }
+
+    private void setUpAnimationDecoratorHelper() {
+        feedListView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            Drawable background;
+            boolean initiated = false;
+
+            private void init() {
+                background = new ColorDrawable(Color.BLACK);
+                initiated = true;
+            }
+
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+                if (!initiated) {
+                    init();
+                }
+                if (parent.getItemAnimator().isRunning()) {
+                    View lastViewComingDown = null;
+                    View firstViewComingUp = null;
+                    int left = parent.getHeight();
+                    int right = parent.getWidth();
+                    int top = 0;
+                    int bottom = 0;
+                    int childCount = parent.getLayoutManager().getChildCount();
+                    for (int i = 0; i < childCount; i++) {
+                        View child = parent.getLayoutManager().getChildAt(i);
+                        if (child.getTranslationY() < 0) {
+                            // view is coming down
+                            lastViewComingDown = child;
+                        } else if (child.getTranslationY() > 0) {
+                            // view is coming up
+                            if (firstViewComingUp == null) {
+                                firstViewComingUp = child;
+                            }
+                        }
+                    }
+
+                    if (lastViewComingDown != null && firstViewComingUp != null) {
+                        // views are coming down AND going up to fill the void
+                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
+                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
+                    } else if (lastViewComingDown != null) {
+                        // views are going down to fill the void
+                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
+                        bottom = lastViewComingDown.getBottom();
+                    } else if (firstViewComingUp != null) {
+                        // views are coming up to fill the void
+                        top = firstViewComingUp.getTop();
+                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
+                    }
+
+                    background.setBounds(left, top, right, bottom);
+                    background.draw(c);
+
+                }
+                super.onDraw(c, parent, state);
+            }
+
+        });
     }
 }
